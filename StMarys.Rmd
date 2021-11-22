@@ -1,0 +1,78 @@
+---
+title: "St. Mary's 11/21"
+author: "Ben Wagner"
+date: "11/21/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+#knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, error=FALSE}
+library(dplyr)
+library(ggplot2)
+library(tidyverse)
+library(rsconnect)
+library(lubridate)
+library(sportyR)
+library(png)
+library(patchwork)
+
+StMarys <- read.csv("C:\\Users\\littl\\OneDrive\\Desktop\\21-22MacBasketball\\St. Marys\\21-22 Mac Basketball - St. Mary's.csv")
+```
+
+
+```{r Mac Basketball theme for Plots}
+
+#theme
+MacBBall_theme <- theme(
+  #titles
+  plot.title=element_text(hjust=0.5, size=14, color="#283375"),
+  plot.title.position = "plot",
+  plot.caption=element_text(size=8, color="#283375", hjust=0.5),
+  plot.caption.position = "plot",
+  plot.subtitle = element_text(color = "#283375"),
+
+  #background
+  panel.border=element_blank(),
+  panel.background = element_rect(fill = "#cfb59b"),
+  plot.background = element_rect(fill = "#cfb59b"),
+  plot.margin=ggplot2::margin(0.5, 0.5, 0.5, 0.5, "in"),
+  #axes
+  axis.ticks.length=unit(0.15, "cm"),
+  axis.line =element_line(colour = "#d97716", 
+                      size = 1, linetype = "solid"),
+  axis.text = element_text(size=6, color="#283375"),
+  #no legend
+  legend.position = "none")
+
+Mac_logo <-readPNG("C:\\Users\\littl\\OneDrive\\Desktop\\21-22MacBasketball\\Mac logo.png", native = TRUE)
+```
+
+
+```{r}
+StMarys %>% 
+  filter(Team == "H") %>% 
+  filter(Zone!=0) %>% 
+  mutate(three_pointer = ifelse(Zone<6, 1, 0)) %>%
+  mutate(seconds_left= as.numeric(ms(Time))) %>%  
+  group_by(Zone) %>%  
+  summarize(fga= n(), fgm=sum(Shot.Result), threePm= sum(Zone<6 && Shot.Result==1), eFg=(fgm+(0.5*threePm))/fga) %>% 
+  ggplot(aes(Zone,eFg))+
+  geom_col(fill= "#d97716")+
+  scale_x_continuous(breaks=1:15)+
+  labs(title= "Effective Field Goal Percentage for each of the Shot Zones",
+       x="Zone",
+       y="eFg %",
+       caption="Ben Wagner | Data: Macalester Men's Basketball ")+
+  MacBBall_theme+
+  inset_element(p = Mac_logo,
+                left = 0.1,
+                bottom = 0.66,
+                right = 0.25,
+                top = 0.95)
+  
+```
+
+
