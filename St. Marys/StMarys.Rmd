@@ -19,7 +19,7 @@ library(sportyR)
 library(png)
 library(patchwork)
 
-StMarys <- read.csv("C:\\Users\\littl\\OneDrive\\Documents\\Advanced Data Sci\\21-22MacBasketball\\21-22 Mac Basketball - St. Mary's.csv")
+StMarys <- read.csv("C:\\Users\\littl\\OneDrive\\Documents\\Advanced Data Sci\\21-22MacBasketball\\St. Marys\\21-22 Mac Basketball - St. Mary's.csv")
 ```
 
 
