@@ -59,9 +59,10 @@ StMarys %>%
   mutate(three_pointer = ifelse(Zone<6, 1, 0)) %>%
   mutate(seconds_left= as.numeric(ms(Time))) %>%  
   group_by(Zone) %>%  
-  summarize(fga= n(), fgm=sum(Shot.Result), threePm= sum(Zone<6 && Shot.Result==1), eFg=(fgm+(0.5*threePm))/fga) %>% 
+  summarize(fga= n(), fgm=sum(Shot.Result), threePm= sum(Zone<6 && Shot.Result==1), eFg=(fgm+(0.5*threePm))/fga) %>%   
   ggplot(aes(Zone,eFg))+
   geom_col(fill= "#d97716")+
+  geom_text(aes(label=fga))+
   scale_x_continuous(breaks=1:15)+
   labs(title= "Effective Field Goal Percentage for each of the Shot Zones",
        x="Zone",
@@ -86,7 +87,17 @@ StMarys %>%
   mutate(three_pointer = ifelse(Zone<6, 1, 0)) %>%
   mutate(two_pointer = ifelse(Zone>6, 1, 0)) %>%
   group_by(Name, Zone) %>% 
-  summarize(two_pointers= sum(two_pointer), three_pointers= sum(three_pointer), shots_made= sum(Shot.Result))
+  summarize(two_pointers= sum(two_pointer), three_pointers= sum(three_pointer), shots_made= sum(Shot.Result), shots_taken= two_pointers+three_pointers, fg=shots_made/shots_taken) %>%  
+  ggplot(aes(x=Zone, y=fg))+
+  geom_col(fill= "#d97716")+
+  facet_wrap(vars(Name), scales = "free")+
+  scale_x_continuous(breaks=1:15)+
+  labs(title= "Field Goal Percentage for Each Player in the Shot Zones",
+       x="Zone",
+       y="Fg %",
+       caption="Ben Wagner | Data: Macalester Men's Basketball ")+
+  MacBBall_theme
+  
   
 ```
 
