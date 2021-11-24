@@ -21,6 +21,7 @@ library(patchwork)
 
 StMarys <- read.csv("C:\\Users\\littl\\OneDrive\\Documents\\Advanced Data Sci\\21-22MacBasketball\\St. Marys\\21-22 Mac Basketball - St. Mary's.csv")
 roster <- read.csv("C:\\Users\\littl\\OneDrive\\Documents\\Advanced Data Sci\\21-22MacBasketball\\21-22 Mac Basketball - Mac Roster.csv")
+shot_zone_xy <- read.csv("C:\\Users\\littl\\OneDrive\\Documents\\Advanced Data Sci\\21-22MacBasketball\\21-22 Mac Basketball - Shot Chart.csv")
 ```
 
 
@@ -99,5 +100,34 @@ StMarys %>%
   MacBBall_theme
   
   
+```
+```{r}
+heat_map <-StMarys %>% 
+  filter(Team == "H") %>% 
+  filter(Zone!=0) %>% 
+  mutate(three_pointer = ifelse(Zone<6, 1, 0)) %>%
+  mutate(seconds_left= as.numeric(ms(Time))) %>%  
+  group_by(Zone) %>%  
+  summarize(fga= n(), fgm=sum(Shot.Result), threePm= sum(Zone<6 && Shot.Result==1), eFg=(fgm+(0.5*threePm))/fga) %>% 
+  left_join(shot_zone_xy, by =c("Zone" = "Zone"))  
+
+
+Mac_court = geom_basketball('ncaa', full_surf = FALSE, rotate = TRUE,
+                 court_apron_color = '#283375',
+                 amateur_painted_area_color = '#283375')
+  
+Mac_court+
+  geom_point(data = heat_map, aes(x, y, color=eFg), size= 10)+
+  geom_text(data= heat_map, aes(x,y, label=Zone))+
+  labs(title= "Mac Shooting Heat Map vs. St. Mary's",
+       caption="Ben Wagner | Data: Macalester Men's Basketball ")+
+  theme(plot.title=element_text(hjust=0.5, size=14, color="#283375"),
+  plot.title.position = "plot")
+  
+  
+
+
+
+
 ```
 
